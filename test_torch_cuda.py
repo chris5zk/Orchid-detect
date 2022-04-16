@@ -1,6 +1,3 @@
-import torch
-import sys
+from import_package import *
 
-from bcolors import *
-
-print(bcolors.OKBLUE + "cuda" + bcolors.ENDC if torch.cuda.is_available() else bcolors.WARNING + "cpu" + bcolors.ENDC, file=sys.stderr)
+print(f"{Bcolors.OKBLUE}cuda{Bcolors.OKBLUE}" if torch.cuda.is_available() else f"{Bcolors.OKBLUE}cuda{Bcolors.OKBLUE}", file=sys.stderr)

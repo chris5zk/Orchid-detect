@@ -2,3 +2,5 @@
 .vscode
 __pycache__
 Iris_Dataset
+model.ckpt
+runs
