@@ -9,7 +9,7 @@ tensorboard_log_path = "./runs"
 # Batch size for training, validation, and testing.
 # A greater batch size usually gives a more stable gradient.
 # But the GPU memory is limited, so please adjust it carefully.
-batch_size = 256
+batch_size = 128
 train_ratio = 0.7
 # The number of training epochs.
 early_stop = 1000

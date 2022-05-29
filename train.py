@@ -3,6 +3,7 @@ from hyperparams import *
 
 def train(model, criterion, device, train_loader, valid_loader, optimizer):
     early_stop_count = 0
+    best_loss = 2147483647  # INT_MAX
     if not os.path.exists(tensorboard_log_path):
         os.mkdir(tensorboard_log_path)
     elif len(os.listdir(tensorboard_log_path)) != 0:
@@ -92,7 +93,7 @@ def train(model, criterion, device, train_loader, valid_loader, optimizer):
                 loss = criterion(logits, labels.to(device))
 
                 # Compute the accuracy for current batch.
-                acc = (logits.argmax(dim=-1) == labels.to(device)).float().mean()
+                acc = (logits.argmax(dim=-1) == labels.to(device)).double().mean()
 
                 # Record the loss and accuracy.
                 valid_loss.append(loss.detach().item())  # add detach()
@@ -109,19 +110,15 @@ def train(model, criterion, device, train_loader, valid_loader, optimizer):
             writer.add_scalar("Train/Step", train_loss, epoch)
             writer.add_scalar("Valid/Step", valid_loss, epoch)
             # if the model improves, save a checkpoint at this epoch
-            if epoch == 0:
+            if epoch == 0 or best_loss > valid_loss:
                 best_loss = valid_loss
                 best_acc = valid_acc
                 print(f"{Bcolors.WARNING}Saving model with validation loss {best_loss:.5f} and accuracy {best_acc:.5f}{Bcolors.ENDC}", file=sys.stderr)
                 torch.save(model.state_dict(), model_path)
-            elif best_loss > valid_loss:
-                best_loss = valid_loss
-                best_acc = valid_acc
                 early_stop_count = 0
-                print(f"{Bcolors.WARNING}Saving model with validation loss {best_loss:.5f} and accuracy {best_acc:.5f}{Bcolors.ENDC}", file=sys.stderr)
-                torch.save(model.state_dict(), model_path)
             else:
                 early_stop_count += 1
+
             if early_stop_count >= early_stop:
                 print(f"{Bcolors.FAIL}Our model is not improving with {early_stop_count} steps. Stop.{Bcolors.ENDC}", file=sys.stderr)
                 break
