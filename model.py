@@ -5,12 +5,6 @@ Model
 The basic model here is simply a stack of convolutional layers followed by some fully-connected layers.
 Since there are three channels for a color image (RGB), the input channels of the network must be three. In each convolutional layer, typically the channels of inputs grow, while the height and width shrink (or remain unchanged, according to some hyperparameters like stride and padding).
 Before fed into fully-connected layers, the feature map must be flattened into a single one-dimensional vector (for each image). These features are then transformed by the fully-connected layers, and finally, we obtain the "logits" for each class.
-
-WARNING -- You Must Know
-You are free to modify the model architecture here for further improvement. However, if you want to use some well-known architectures such as ResNet50, please make sure NOT to load the pre-trained weights. Using such pre-trained models is considered cheating and therefore you will be punished. Similarly, it is your responsibility to make sure no pre-trained weights are used if you use torch.hub to load any modules.
-For example, if you use ResNet-18 as your model:
-model = torchvision.models.resnet18(pretrained=False) → This is fine.
-model = torchvision.models.resnet18(pretrained=True) → This is NOT allowed.
 '''
 
 
@@ -56,7 +50,7 @@ class IrisClassifier(nn.Module):
         # Extract features by convolutional layers.
         x = self.cnn_layers(x)
 
-        # The extracted feature map must be flatten before going to fully-connected layers.
+        # The extracted feature map must be flattened before going to fully-connected layers.
         x = x.flatten(1)  # [#, 2457600]
 
         # The features are transformed by fully-connected layers to obtain the final logits.

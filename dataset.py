@@ -11,28 +11,29 @@ Please refer to PyTorch official website for details about different transforms.
 # Please think about what kind of augmentation is helpful for food recognition.
 train_tfm = transforms.Compose([
     # Resize the image into a fixed shape (height = width = 128)
-    transforms.Resize((256, 256)),
+    transforms.Resize((224, 224)),
     # You may add some transforms here.
-    # transforms.RandomHorizontalFlip(),
-    # transforms.RandomResizedCrop(128),
-    # transforms.RandomRotation(degrees=(-45, 45), fill=0),
-    # transforms.ColorJitter(brightness=(0.5, 1.5), contrast=(0.5, 1.5), saturation=(0.5, 1.5), hue=(-0.1, 0.1)),
-    # transforms.RandomGrayscale(),
+    transforms.RandomHorizontalFlip(),
+    transforms.RandomResizedCrop(128),
+    transforms.RandomRotation(degrees=(-45, 45), fill=0),
+    transforms.ColorJitter(brightness=(0.5, 1.5), contrast=(0.5, 1.5), saturation=(0.5, 1.5), hue=(-0.1, 0.1)),
+    transforms.RandomGrayscale(),
     # ToTensor() should be the last one of the transforms.
     transforms.ToTensor(),
-    # transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5)),
+    transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
 ])
 
 # We don't need augmentations in testing and validation.
 # All we need here is to resize the PIL image and transform it into Tensor.
 test_tfm = transforms.Compose([
-    # transforms.Resize((128, 128)),
+    transforms.Resize((224, 224)),
     transforms.ToTensor(),
-    # transforms.Normalize(mean=(0.5, 0.5, 0.5), std=(0.5, 0.5, 0.5)),
+    transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
 ])
 
 
 # Construct datasets.
+# https://stackoverflow.com/questions/65231299/load-csv-and-image-dataset-in-pytorch
 class IrisTrainingDataset(Dataset):
     def __init__(self, csv_path: str, image_folder: str, transform=None):
         self.csv_label = pd.read_csv(csv_path)

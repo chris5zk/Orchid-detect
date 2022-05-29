@@ -6,14 +6,11 @@ label_path = f"{dataset_path}/label.csv"
 model_path = "./model.ckpt"
 tensorboard_log_path = "./runs"
 
-# "cuda" only when GPUs are available.
-device = "cuda" if torch.cuda.is_available() else "cpu"
-
 # Batch size for training, validation, and testing.
 # A greater batch size usually gives a more stable gradient.
 # But the GPU memory is limited, so please adjust it carefully.
-batch_size = 32
-train_ratio = 0.9
+batch_size = 256
+train_ratio = 0.7
 # The number of training epochs.
 early_stop = 1000
 n_epochs = 10000  # n_epochs must greater than 1

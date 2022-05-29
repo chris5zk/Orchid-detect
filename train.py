@@ -1,7 +1,7 @@
 from hyperparams import *
 
 
-def train(model, criterion, train_loader, valid_loader):
+def train(model, criterion, device, train_loader, valid_loader, optimizer):
     early_stop_count = 0
     if not os.path.exists(tensorboard_log_path):
         os.mkdir(tensorboard_log_path)
@@ -22,9 +22,6 @@ def train(model, criterion, train_loader, valid_loader):
             model.load_state_dict(torch.load(model_path), strict=False)
     try:
         for epoch in range(n_epochs):
-            # Initialize optimizer, you may fine-tune some hyperparameters such as learning rate on your own.
-            optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
-
             # ---------- Training ----------
             # Make sure the model is in train mode before training.
             model.train()
@@ -37,13 +34,15 @@ def train(model, criterion, train_loader, valid_loader):
             for batch in tqdm(train_loader):
                 # A batch consists of image data and corresponding labels.
                 imgs, labels = batch
+                imgs = imgs.to(device)
+                labels = labels.to(device)
 
                 # Forward the data. (Make sure data and model are on the same device.)
-                logits = model(imgs.to(device))
+                logits = model(imgs)
 
                 # Calculate the cross-entropy loss.
                 # We don't need to apply softmax before computing cross-entropy as it is done automatically.
-                loss = criterion(logits, labels.to(device))
+                loss = criterion(logits, labels)
 
                 # Gradients stored in the parameters in the previous step should be cleared out first.
                 optimizer.zero_grad()
@@ -58,7 +57,7 @@ def train(model, criterion, train_loader, valid_loader):
                 optimizer.step()
 
                 # Compute the accuracy for current batch.
-                acc = (logits.argmax(dim=-1) == labels.to(device)).float().mean()
+                acc = (logits.argmax(dim=-1) == labels.to(device)).double().mean()
 
                 # Record the loss and accuracy.
                 train_loss.append(loss.detach().item())  # add detach()
